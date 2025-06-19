@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mr.Wafa - Design Interior Terbaik</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #00e676, #00c853);
+            min-height: 100vh;
+        }
+
+        /* Loading Animation */
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #00e676, #00c853);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loading-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-scene {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            height: 150px;
+            margin-bottom: 20px;
+        }
+
+        .house-icon, .runner-icon {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .house-icon {
+            right: 20px;
+            bottom: 20px;
+            animation: pulse 1s ease-in-out infinite alternate;
+        }
+
+        .runner-icon {
+            bottom: 30px;
+            left: 20px;
+            animation: runToHouse 1.5s cubic-bezier(0.65,0,0.35,1) infinite;
+        }
+
+        @keyframes runToHouse {
+            0% { transform: translateX(0) scaleX(1); }
+            45% { transform: translateX(calc(100% - 80px)) scaleX(1); }
+            50% { transform: translateX(calc(100% - 80px)) scaleX(-1); }
+            95% { transform: translateX(0) scaleX(-1); }
+            100% { transform: translateX(0) scaleX(1); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); }
+            100% { transform: scale(1.05); }
+        }
+
+        .loading-progress {
+            width: 80%;
+            max-width: 250px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #fff, #f0f0f0);
+            border-radius: 3px;
+            animation: loadingProgress 1.5s ease-out forwards;
+        }
+
+        @keyframes loadingProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .loading-percentage {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .main-content.visible {
+            opacity: 1;
+        }
+
+        header {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 12px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .logo {
+            background: white;
+            color: #00c853;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+
+        .nav-links {
+            display: none;
+            list-style: none;
+            gap: 15px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #00c853;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .hero-text {
+            text-align: center;
+        }
+
+        .hero-text h1 {
+            color: white;
+            font-size: 2rem;
+            line-height: 1.3;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .hero-stats {
+            color: #ffeb3b;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .hero-images {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .hero-image {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .contact-section {
+            background: white;
+            margin: 30px 15px;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .contact-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .contact-item h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .contact-item p {
+            font-size: 14px;
+        }
+
+        .contact-item:active {
+            transform: scale(0.98);
+        }
+
+        .qr-code {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Tablet and Desktop Styles */
+        @media (min-width: 768px) {
+            .logo {
+                padding: 8px 15px;
+                font-size: 16px;
+            }
+            
+            .nav-links {
+                display: flex;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+            
+            .hero {
+                padding: 60px 20px;
+                grid-template-columns: 1fr 2fr;
+                display: grid;
+                text-align: left;
+            }
+            
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-images {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .hero-image img {
+                height: 180px;
+            }
+            
+            .contact-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
+            .contact-section {
+                padding: 40px;
+                margin: 50px 20px;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .hero-text h1 {
+                font-size: 3rem;
+            }
+            
+            .hero-image img {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-container" id="loadingScreen">
+        <div class="loading-scene">
+            <img class="runner-icon" src="/image/runner.png" alt="Runner">
+            <img class="house-icon" src="/image/house.png" alt="House">
+        </div>
+        <div class="loading-progress">
+            <div class="progress-bar"></div>
+        </div>
+        <div class="loading-percentage" id="loadingPercentage">0%</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <header>
+            <nav>
+                <div class="logo">Mr.Wafa</div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Beranda</a></li>
+                    <li><a href="produk.html">Produk</a></li>
+                    <li><a href="cara-kerja.html">Cara Kerja</a></li>
+                    <li><a href="about.html">About us</a></li>
+                </ul>
+                <div class="nav-buttons">
+                    <a href="login.html" class="btn btn-primary">Masuk/Daftar</a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <section class="hero">
+                <div class="hero-text">
+                    <h1>Design Interior Terbaik untuk Hunianmu</h1>
+                    <div class="hero-stats">5000+ hunian terwujud</div>
+                </div>
+                <div class="hero-images">
+                    <div class="hero-image">
+                        <img src="/image/living-room.png" alt="Living Room Design">
+                    </div>
+                    <div class="hero-image">
+                        <img src="/image/kitchen.png" alt="Kitchen Design">
+                    </div>
+                    <div class="hero-image">
+                        <img src="/image/bedroom.png" alt="Bedroom Design">
+                    </div>
+                    <div class="hero-image">
+                        <img src="/image/modern-interior.png" alt="Modern Interior">
+                    </div>
+                </div>
+            </section>
+
+            <section class="contact-section">
+                <div class="contact-grid">
+                    <div class="contact-item" onclick="openWhatsApp()">
+                        <h3>Contact Service</h3>
+                        <p>WhatsApp Support</p>
+                    </div>
+                    
+                    <div class="contact-item" onclick="sendEmail()">
+                        <h3>Contact Service</h3>
+                        <p>Email Support</p>
+                    </div>
+                    
+                    <div class="contact-item" onclick="openInstagram()">
+                        <h3>Follow Us</h3>
+                        <p>Instagram</p>
+                    </div>
+                    
+                    <div class="qr-code" onclick="openWhatsApp()">
+                        <img src="/image/qr.png" alt="QR Code WhatsApp">
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Loading Animation
+        let startTime = null;
+        const duration = window.innerWidth <= 480 ? 1000 : 1500;
+        
+        function animateLoading(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / duration, 1);
+            const percentage = Math.floor(progress * 100);
+            
+            document.getElementById('loadingPercentage').textContent = percentage + '%';
+            
+            if (progress < 1) {
+                requestAnimationFrame(animateLoading);
+            } else {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('mainContent').classList.add('visible');
+            }
+        }
+        
+        window.addEventListener('load', () => {
+            requestAnimationFrame(animateLoading);
+        });
+
+        // Contact Functions
+        function openWhatsApp() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const phoneNumber = "62895337647898";
+            const message = "Halo Mr.Wafa, saya tertarik dengan layanan design interior Anda. Bisa minta informasi lebih lanjut?";
+            
+            if (isMobile) {
+                window.location.href = `whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+            } else {
+                window.open(`https://web.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`, '_blank');
+            }
+        }
+
+        function sendEmail() {
+            const email = "rafi.ihsanuddin@gmail.com";
+            const subject = "Konsultasi Design Interior";
+            const body = "Halo Tim Mr.Wafa,\n\nSaya tertarik dengan layanan Anda dan ingin bertanya tentang:\n\n1. \n2. \n3. \n\nTerima kasih";
+            window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+
+        function openInstagram() {
+            const username = "ihsanuddin.1";
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                window.location.href = `instagram://user?username=${username}`;
+                setTimeout(() => {
+                    window.location.href = `https://instagram.com/${username}`;
+                }, 250);
+            } else {
+                window.open(`https://instagram.com/${username}`, '_blank');
+            }
+        }
+
+        // Login Check
+        function checkLogin() {
+            const user = JSON.parse(localStorage.getItem('loggedInUser'));
+            if (user) {
+                document.querySelector('.nav-buttons').innerHTML = `
+                    <a href="profile.html" class="btn btn-primary">
+                        ${user.email.split('@')[0]}
+                    </a>
+                    <button onclick="logout()" class="btn btn-secondary">
+                        Logout
+                    </button>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('loggedInUser');
+            window.location.href = 'login.html';
+        }
+
+        checkLogin();
+
+        // Navigation
+        document.querySelectorAll('.nav-links a, .btn').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (href && href.endsWith('.html')) {
+                    e.preventDefault();
+                    document.body.style.opacity = '0.7';
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 300);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
